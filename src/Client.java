@@ -79,6 +79,14 @@ public class Client {
         write(socket.getOutputStream(), sendPayload);
     }
 
+    public void write(Socket socket, int type, int len, int data) throws IOException {
+        ArrayList<Byte> sendPayload = new ArrayList<>();
+        addPayload(sendPayload, type);
+        addPayload(sendPayload, len);
+        addPayload(sendPayload, data);
+        write(socket.getOutputStream(), sendPayload);
+    }
+
     private void write(OutputStream outputStream, ArrayList<Byte> sendPayload) throws IOException {
         outputStream.write(toPrimitives(sendPayload.toArray()));
         outputStream.flush();
@@ -111,7 +119,33 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) {
+    static int countFibonacci(ArrayList<Integer> arr) {
+        int n = arr.size();
+        int amount = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (isFibonacci(arr.get(i))) {
+                amount++;
+            }
+        }
+
+        return amount;
+    }
+
+    static boolean isPerfectSquare(int x) {
+        int s = (int) Math.sqrt(x);
+        return (s * s == x);
+    }
+
+    static boolean isFibonacci(int n) {
+        if (n <= 0)
+            return false;
+
+        return isPerfectSquare(5 * n * n + 4) ||
+                isPerfectSquare(5 * n * n - 4);
+    }
+
+    static void test1() throws IOException {
         Client client = new Client();
         Socket socketOfClient;
         try {
@@ -158,8 +192,71 @@ public class Client {
             String flag = new String(Arrays.copyOfRange(payload, 8, 8 + len),
                     StandardCharsets.UTF_8);
             System.out.println("Flag: " + flag);
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
+        }
+    }
+
+    static void test2() throws IOException {
+        Client client = new Client();
+        Socket socketOfClient;
+        try {
+            socketOfClient = new Socket(SERVERHOST, PORT);
+            String msv = "20020005";
+            client.write(socketOfClient, 0, msv.length(), msv);
+            byte[] payload = new byte[100100];
+            socketOfClient.getInputStream().read(payload);
+            byte[] typeByte = new byte[4];
+            byte[] lenByte = new byte[4];
+            int type, len;
+            ArrayList<Integer> dataPayload = new ArrayList<>();
+            // System.out.println("Payload: " + Arrays.toString(payload));
+            typeByte = Arrays.copyOfRange(payload, 0, 4);
+            lenByte = Arrays.copyOfRange(payload, 4, 8);
+            type = client.fromByteArray(typeByte);
+            len = client.fromByteArray(lenByte);
+            System.out.println(len);
+            for (int i = 0; i < 8; i++) {
+                System.out.print(payload[i] + ", ");
+            }
+            System.out.println();
+            // System.out.println("Payload: " + payload);
+            for (int i = 8; i < len * 4 + 8; i += 4) {
+                byte[] tg = Arrays.copyOfRange(payload, i, i + 4);
+                dataPayload.add(client.fromByteArray(tg));
+            }
+            System.out.println(dataPayload.size());
+            int res = countFibonacci(dataPayload);
+            System.out.println(res);
+            // dataPayload.add(3);
+            // System.out.println(dataPayload.toString());
+            // ArrayList<Integer> res = new ArrayList<>();
+            // res.add(dataPayload.get(0) + dataPayload.get(1));
+            client.write(socketOfClient, 2, 1, res);
+
+            payload = new byte[100];
+            socketOfClient.getInputStream().read(payload);
+            type = client.fromByteArray(Arrays.copyOfRange(payload, 0, 4));
+            if (type == 3) {
+                System.out.println("err");
+                return;
+            }
+            len = client.fromByteArray(Arrays.copyOfRange(payload, 4, 8));
+            String flag = new String(Arrays.copyOfRange(payload, 8, 8 + len),
+                    StandardCharsets.UTF_8);
+            System.out.println("Flag: " + flag);
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            test2();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
