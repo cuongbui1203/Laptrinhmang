@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class Client {
-    static final String SERVERHOST = "localhost";
-    static final int PORT = 9999;
+    static final String SERVERHOST = "0.0.0.0";
+    static final int PORT = 1234;
 
     private byte[] reverse(byte[] bytes) {
         int i;
