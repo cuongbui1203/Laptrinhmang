@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Random;
 
-public class Server {
-    private final static int PORT = 9999;
+public class ServerBai1 {
+    private final static int PORT = 1234;
 
     private byte[] reverse(byte[] bytes) {
         int i;
@@ -205,41 +205,11 @@ public class Server {
         }
     }
 
-    public void process2() {
-        ServerSocket sever = null;
-        Socket socket = null;
-        CheckFibonacci checkFibonacci = null;
-        try {
-            sever = new ServerSocket(Server.PORT);
-
-            System.out.println("Waiting for new connection....");
-
-            socket = sever.accept();
-
-            String seed = PKT_HELLO(socket);
-
-            ArrayList<Integer> data = new ArrayList<>();
-            ArrayList<Integer> res = new ArrayList<>();
-            checkFibonacci = new CheckFibonacci();
-
-            for (int i : checkFibonacci.getMyArr())
-                data.add(i);
-            res.add(checkFibonacci.count());
-
-            seed += data.size();
-
-            PKT_CALC(socket, data);
-
-            PKT_RES(socket, seed, res);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
+    
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.process2();
+        //bài 1 quicksort
+        server.process();
     }
 }
