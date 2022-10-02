@@ -1,13 +1,14 @@
-public class ClientBai1 {
+import java.io.IOException;
 
-public static void main(String[] args) {
+public class ClientBai1 {
+    // count fibonacci in Array
+    public static void main(String[] args) {
         try {
- //client bai quicksort
-            Client::test1();
+            Client.bai1();
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+            System.exit(1);
         }
-
     }
 }

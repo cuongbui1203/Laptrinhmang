@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class Client {
-    static final String SERVERHOST = "0.0.0.0";
+    static final String SERVER_HOST = "0.0.0.0";
     static final int PORT = 1234;
 
     private byte[] reverse(byte[] bytes) {
@@ -145,11 +145,11 @@ public class Client {
                 isPerfectSquare(5 * n * n - 4);
     }
 
-    static void test1() throws IOException {
+    static void bai1() throws IOException {
         Client client = new Client();
         Socket socketOfClient;
         try {
-            socketOfClient = new Socket(SERVERHOST, PORT);
+            socketOfClient = new Socket(SERVER_HOST, PORT);
             String msv = "20020005";
             client.write(socketOfClient, 0, msv.length(), msv);
             byte[] payload = new byte[100100];
@@ -198,11 +198,11 @@ public class Client {
         }
     }
 
-    static void test2() throws IOException {
+    static void bai2() throws IOException {
         Client client = new Client();
         Socket socketOfClient;
         try {
-            socketOfClient = new Socket(SERVERHOST, PORT);
+            socketOfClient = new Socket(SERVER_HOST, PORT);
             String msv = "20020005";
             client.write(socketOfClient, 0, msv.length(), msv);
             byte[] payload = new byte[100100];
@@ -251,13 +251,4 @@ public class Client {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            test2();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-    }
 }

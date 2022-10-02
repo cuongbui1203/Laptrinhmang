@@ -1,15 +1,31 @@
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Server {
     private final static int PORT = 1234;
+    private final static String HOST = "0.0.0.0";
+
+    private ServerSocket server = null;
+    private Socket socket = null;
+
+    public Server() {
+        try {
+            server = new ServerSocket();
+            server.bind(new InetSocketAddress(InetAddress.getByName(HOST), PORT));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
 
     private byte[] reverse(byte[] bytes) {
         int i;
@@ -171,63 +187,53 @@ public class Server {
     }
 
     public void process() {
-        ServerSocket server = null;
-        Socket socket = null;
         QuickSort quickSort = null;
         try {
-            server = new ServerSocket(Server.PORT);
-
+            System.out.println("Sort");
             System.out.println("Waiting for new connection....");
 
             socket = server.accept();
 
             String seed = PKT_HELLO(socket);
 
-            ArrayList<Integer> data = new ArrayList<>();
-            ArrayList<Integer> res = new ArrayList<>();
             quickSort = new QuickSort();
 
-            for (int i : quickSort.getMyArr())
-                data.add(i);
+            List<Integer> data = Arrays.stream(quickSort.getMyArr()).boxed().collect(Collectors.toList());
             quickSort.sort();
-            for (int i : quickSort.getMyArr())
-                res.add(i);
+            List<Integer> res = Arrays.stream(quickSort.getMyArr()).boxed().collect(Collectors.toList());
 
             seed += data.size();
 
-            PKT_CALC(socket, data);
+            PKT_CALC(socket, (ArrayList<Integer>) data);
 
-            PKT_RES(socket, seed, res);
+            PKT_RES(socket, seed, (ArrayList<Integer>) res);
 
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
         }
-      
-          public void process2() {
-        ServerSocket server = null;
-        Socket socket = null;
+    }
+
+    public void process2() {
         CheckFibonacci checkFibonacci = null;
         try {
-            server = new ServerSocket(Server.PORT);
-
+            System.out.println("Count Fibonacci");
             System.out.println("Waiting for new connection....");
 
             socket = server.accept();
 
             String seed = PKT_HELLO(socket);
 
-            ArrayList<Integer> data = new ArrayList<>();
             ArrayList<Integer> res = new ArrayList<>();
             checkFibonacci = new CheckFibonacci();
 
-            for (int i : checkFibonacci.getMyArr())
-                data.add(i);
+            List<Integer> data = Arrays.stream(checkFibonacci.getMyArr()).boxed().collect(Collectors.toList());
+
             res.add(checkFibonacci.count());
 
             seed += data.size();
 
-            PKT_CALC(socket, data);
+            PKT_CALC(socket, (ArrayList<Integer>) data);
 
             PKT_RES(socket, seed, res);
 
@@ -237,6 +243,16 @@ public class Server {
         }
     }
 
-    }
+    public static void main(String[] args) {
+        ServerSocket server = null;
 
+        try {
+            server = new ServerSocket();
+            server.bind(new InetSocketAddress(InetAddress.getByName("0.0.0.0"), PORT));
+            System.out.println("Local Socket Address: " + server.getLocalSocketAddress());
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }
